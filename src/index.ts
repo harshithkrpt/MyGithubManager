@@ -1,27 +1,18 @@
 import "dotenv/config";
-import { GraphQLClient } from "graphql-request";
+import express from "express";
+import getQuery from "./routes/getQuery";
+import cors from "cors";
+import bodyParser from "body-parser";
 
-(async () => {
-  const token = process.env.GITHUB_GRAPHQL_API;
+const app = express();
 
-  if (token) {
-    const endPoint: string = "https://api.github.com/graphql";
-    const graphQLClient = new GraphQLClient(endPoint, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
+// Adding Cors
+app.use(cors({ origin: true }));
 
-    const QUERY = `
-  query { 
-    viewer { 
-      login
-    }
-  }`;
+app.use(bodyParser.json());
+// ROUTE
+app.use("/", getQuery);
 
-    const data = await graphQLClient.request(QUERY);
-    console.log(data);
-  } else {
-    console.log("Get Your Github token");
-  }
-})();
+app.listen(4000, () => {
+  console.log(`Server Running at Port 4000`);
+});
